@@ -62,10 +62,22 @@ def check_connection(client):
         
 
 def open_souk_server(client):
+    
     pass
 
 
 def close_souk_server(client, password):
+    """ This function closes the souk server by using the kill command with the process ID. This is achieved through first finding all processes that match a similar 
+        name and then using a regex to ensure the correct one is chosen. With the process id found, the kill command can be executed, forcefully killing the souk 
+        server
+
+    Args:
+        client (object): The client object with the ssh connection to the server
+        password (str): The password for the server enabling sudo commands to be run
+        
+    Returns:
+        No specific return, used to end the function prematurely
+    """
     # constant variables
     process_name = 'py38/bin/souk-readout-server'
     regex = '^[0-9]+ sudo py38/bin/souk-readout-server$'
@@ -90,7 +102,7 @@ def close_souk_server(client, password):
             flag = True         # set a flag for error checking
 
     if flag == False:
-        print("An error has occured while finding the correct process ID. You will have to kill the souk server manually")
+        print("An error has occurred while finding the correct process ID. You will have to kill the souk server manually")
         return
         
     # try to convert the PID into a integer for the kill command
