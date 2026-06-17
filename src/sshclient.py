@@ -64,12 +64,36 @@ def open_souk_server(client):
     pass
 
 
-def close_souk_server(client):
+def close_souk_server(client, password):
     # run a command to pull the relevant process ids
     # strip the data that is pulled to its relevant parts
     # kill the process id 
     
-    # runs a linux command to filter the current processes with "readout-server"
-    _stdin, _stdout, _stderr = client.exec_command("ps aux | grep readout-server")
+    process_name = 'py38/bin/souk-readout-server'
     
-    # 
+    # runs a linux command to filter the current processes with "readout-server"
+    _stdin, _stdout, _stderr = client.exec_command(f"pgrep -af {process_name}")
+    
+    output = _stdout.read().decode().splitlines()
+    
+    for i, line in enumerate(output):
+        if process_name in line:
+            line.split()
+            
+            PID = line[0]
+            
+    try:
+        PID = int(PID)
+
+    except ValueError as error:
+        # TODO this needs to produce a full error that ouptuts to the user ensuring they know the process has not been killed. This is logic error
+        print(f"An error has occurred while converting the process id into a integer: {error}")
+        
+        
+    _stdin, _stdout, _stderr = client.exec_command(f"sudo -S -P kill -9 {PID}", get_pty= True)
+    
+    _stdin.write(f"{password}\n")
+    _stdin.flush()
+    
+    output = _stdout.read().decode()
+    print(output)
