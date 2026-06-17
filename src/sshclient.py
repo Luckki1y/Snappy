@@ -1,7 +1,8 @@
 # SSH client
 
 # import modules
-import paramiko
+import paramiko         # used for the ssh
+import re           # used to confirm the specific souk server process
 
 # import the server details from a separate file
 from src.ssh_identities import host, username, password
@@ -65,35 +66,48 @@ def open_souk_server(client):
 
 
 def close_souk_server(client, password):
-    # run a command to pull the relevant process ids
-    # strip the data that is pulled to its relevant parts
-    # kill the process id 
-    
+    # constant variables
     process_name = 'py38/bin/souk-readout-server'
+    regex = '^[0-9]+ sudo py38/bin/souk-readout-server$'
     
-    # runs a linux command to filter the current processes with "readout-server"
+    flag = False
+    
+    # runs a linux command to filter the current processes with the variable process name
     _stdin, _stdout, _stderr = client.exec_command(f"pgrep -af {process_name}")
     
-    output = _stdout.read().decode().splitlines()
+    output = _stdout.read().decode().splitlines()           # decode the byte stream into a string and create an array of the lines
     
-    for i, line in enumerate(output):
-        if process_name in line:
-            line.split()
+    # check to see if any processes have been captured
+    if output is None:
+        print("An error has occurred while fetching the process ID. You will have to kill the souk server manually")
+        return
+    
+    # loop through each output line comparing against the regex for the correct souk process
+    for line in output:
+        if re.search(regex, line):
+            process = line.split()          # split the line into -> 'xxxx', 'sudo', 'py38/bin/souk-readout-server'
             
-            PID = line[0]
-            
+            flag = True         # set a flag for error checking
+
+    if flag == False:
+        print("An error has occured while finding the correct process ID. You will have to kill the souk server manually")
+        return
+        
+    # try to convert the PID into a integer for the kill command
     try:
-        PID = int(PID)
+        PID = int(process[0])
 
     except ValueError as error:
         # TODO this needs to produce a full error that ouptuts to the user ensuring they know the process has not been killed. This is logic error
         print(f"An error has occurred while converting the process id into a integer: {error}")
-        
-        
-    _stdin, _stdout, _stderr = client.exec_command(f"sudo -S -P kill -9 {PID}", get_pty= True)
+        return
     
-    _stdin.write(f"{password}\n")
+    # run the kill command
+    _stdin, _stdout, _stderr = client.exec_command(f"sudo -S -P kill -9 {PID}", get_pty= True)          # get_pty allows the command to use sudo
+        
+    _stdin.write(f"{password}\n")           # the password needs to be entered to run a sudo command *Note: this will also print to the CLI
     _stdin.flush()
-    
+        
+    # print the output of the kill command to the user
     output = _stdout.read().decode()
     print(output)
