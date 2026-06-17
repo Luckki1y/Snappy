@@ -7,7 +7,7 @@ import re           # used to confirm the specific souk server process
 # import the server details from a separate file
 from src.ssh_identities import host, username, password
 
-def create_ssh(host, username, password):
+def create_ssh(host: str, username: str, password: str) -> paramiko.client.SSHClient:
     """ This function will create a new ssh client to a remote server using the paramaters passed and return a ssh object
         Note: This must be closed after using to ensure resources are kept to a minimal
 
@@ -43,7 +43,7 @@ def create_ssh(host, username, password):
     return client
 
 
-def close_ssh(client):
+def close_ssh(client: paramiko.client.SSHClient) -> None:
     """ This function will close the client connection to the server and ensuring the resources are freed
 
     Args:
@@ -52,24 +52,48 @@ def close_ssh(client):
     
     client.close()          # close the connection
 
-def check_connection(client):
-    """ A very simple connection check by running a command to show the free ram available on the system
+def check_connection(client: paramiko.client.SSHClient) -> None:
+    """ A very simple connection check by running a command to show the free ram available on the system.
+    
+    Args:
+        client (object): Contains the ssh connection to the server for running commands
     """
-    # check the ssh connection 
+    # check the ssh connection and output the result from the command
     _stdin, _stdout, _stderr = client.exec_command("free -h")
     
-    print(_stdout.read().decode())    
+    print(_stdout.read().decode())  
         
 
-def open_souk_server(client):
+def open_souk_server(client: paramiko.client.SSHClient, password: str) -> bool:
+    """ This function will open the souk server allowing for measurements to be taken. The subroutine will also return a value which needs to be handled within the main
+        code.
+
+    Args:
+        client (object): Contains the SSH connection to the server
+        password (str): The password for the user, enabling sudo commands to be run
+
+    Returns:
+        bool: This function returns TRUE for a successful souk server startup and FALSE for an exception being raised
+    """
+    try:
+        _stdin, _stdout, _stderr = client.exec_command("sudo py38/bin/souk-readout-server", get_pty = True)
+        
+        _stdin.write(f"{password}\n")
+        _stdin.flush()
     
-    pass
+    except paramiko.SSHException:
+        print("The souk server has been unable to run. Please investigate")
+        return False
+    
+    else:
+        print("The souk server has successfully started")
+        return True
 
 
-def close_souk_server(client, password):
+def close_souk_server(client: paramiko.client.SSHClient, password: str) -> None:
     """ This function closes the souk server by using the kill command with the process ID. This is achieved through first finding all processes that match a similar 
         name and then using a regex to ensure the correct one is chosen. With the process id found, the kill command can be executed, forcefully killing the souk 
-        server
+        server.
 
     Args:
         client (object): The client object with the ssh connection to the server
