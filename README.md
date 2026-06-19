@@ -10,14 +10,13 @@ To install:
 ## Setup
 
 To setup this project after installing the dependencies and the files, create a new file called ssh_identities.py. Within this file add the following
-'''python
 
-username = YOUR_USERNAME
+    username = YOUR_USERNAME
+    
+    host = YOUR_HOST
+    
+    password = YOUR_PASSWORD
+    
 
-host = YOUR_HOST
-
-password = YOUR_PASSWORD
-
-'''
 This is all needed to ensure the paramiko module can successfully create a ssh session into your RFSoc
 
