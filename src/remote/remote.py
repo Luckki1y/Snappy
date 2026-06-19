@@ -52,7 +52,7 @@ def setup(config_file: str):
             "data" : str(error)
         }
         
-        print(json.dump(json_dump))
+        print(json.dumps(json_dump))
         raise RuntimeError
         
     return s, json_dump
@@ -127,7 +127,7 @@ def persistent_server(s):
             # fetch the input and load the command
             line = input()
             
-            request = json.load(line)
+            request = json.loads(line)
             
             command = request["command"]
             
@@ -136,14 +136,14 @@ def persistent_server(s):
                 json_dump = sanity_check(s)         # perform the command
                 
                 # package as a json and output to the cli to be collected by the ssh client
-                print(json.dump(json_dump))
+                print(json.dumps(json_dump))
                 
             # full snapshot command from the main program
             elif command == "full-snapshot":  
                 json_dump = full_snapshot(s, request["n"], request["samples"], request["filename"])          # perform the command
                 
                 # package as a json and output to the cli to be collected by the ssh client
-                print(json.dump(json_dump))
+                print(json.dumps(json_dump))
                 
             # any new commands can be added as
             # elif command = "..."
@@ -156,7 +156,7 @@ def persistent_server(s):
                     "status" : "killed"
                 }
                 
-                print(json.dump(json_dump))
+                print(json.dumps(json_dump))
                 
                 # kill the process
                 sys.exit()
@@ -169,7 +169,7 @@ def persistent_server(s):
                 "error" : str(error)
             }
             
-            print(json.dump(json_dump))         # output the json to be collected
+            print(json.dumps(json_dump))         # output the json to be collected
 
 # main
 if __name__ == "__main__":

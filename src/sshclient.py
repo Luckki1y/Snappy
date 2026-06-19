@@ -81,8 +81,9 @@ def open_souk_server(client: paramiko.client.SSHClient, password: str) -> bool:
         _stdin.write(f"{password}\n")
         _stdin.flush()
     
-    except paramiko.SSHException:
+    except paramiko.SSHException as error:
         print("The souk server has been unable to run. Please investigate")
+        print(f"Error: {error}")
         return False
     
     else:

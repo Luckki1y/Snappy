@@ -15,7 +15,7 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     
     parser.add_argument(
-        "--server_config_file", "--sc",
+        "--board_config_file", "--sc",
         type= str,
         default= "souk-single-pipeline-4x2.yaml",
         help= "The config file for the souk mkid readout module to setup the server"
@@ -63,8 +63,14 @@ def arg_parser():
         default= 4500,
         help= ""            # TODO add the help section
     )
+    parser.arg_argument(
+        "--single_snapshot_filename", "--ssfn",
+        type= str,
+        default= "SanityCheck.png",
+        help= "The file name for a figure created by the program to ensure no signal is currently running"
+    )
     parser.add_argument(
-        "--filename", "--fn",
+        "--full_snapshot_filename", "--fsfn",
         required= True,
         type= str,
         help= "The file name for the full snapshot being run to be saved as. This typically should be a .npy extension"
@@ -81,11 +87,11 @@ def main(args, host, username, password):
     
     # create the remote control instance, initializing the board
     print("Initialsing the board")
-    tools_control = RemoteControl(tools_client)
+    tools_control = RemoteControl(tools_client, f"{args.board_config_file}")
     
     # complete a sanity check
     print("Completing a sanity check")
-    tools_control.tone_check(args.single_snapshot_filename)
+    tools_control.tone_check(f"{args.single_snapshot_filename}")
     
     # ensure the user wishes to continue
     response = input("Sanity check has been completed and saved as {args.single_snapshot_filename}. Please respond with Yes to continue")
@@ -107,11 +113,11 @@ def main(args, host, username, password):
     print("Start the souk readout server")
     souk_server_flag = sshclient.open_souk_server(server_client, password)
     if souk_server_flag == False:            # the server has errored out, exiting the program
-        raise      
+        return
     
     # setup the RFSoc board for tone generation
     print("Setting up the RFSoc for tone generation")
-    c = tone_generation.setup_config(args.local_config_file, args.clock_setting)
+    c = tone_generation.setup_config(f"{args.local_config_file}", f"{args.clock_setting}")
     
     # start the tone generation
     print("Starting tone generation")
@@ -119,7 +125,7 @@ def main(args, host, username, password):
     
     # complete a full snapshot
     print("Completing a full snapshot")
-    tools_control.full_snapshot(args.n, args.sample, args.full_snapshot_filename)
+    tools_control.full_snapshot(args.n, args.sample, f"{args.full_snapshot_filename}")
     
     # cli info 
     print("Stopping all process and shutting down")

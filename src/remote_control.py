@@ -8,7 +8,7 @@ import paramiko
 import json
 
 class RemoteControl:
-    def __init__(self, client: paramiko.client.SSHClient) -> None:
+    def __init__(self, client: paramiko.client.SSHClient, configfile: str) -> None:
         self._stdin, self._stdout, self._stderr = client.exec_command("")           # TODO implement the python command
         
         response = json.loads(self._stdout.readline())
@@ -31,11 +31,11 @@ class RemoteControl:
         }
         
         # write the command to the cli for the remote program to read
-        self._stdin.write(f"{json.dump(command)} \n")
+        self._stdin.write(f"{json.dumps(command)} \n")
         self._stdin.flush()
         
         # read the json response and save in a variable
-        response = json.load(self._stdout.read())
+        response = json.loads(self._stdout.read())
         
         # catch any errors thrown
         if response["status"] != "ready":           
@@ -45,8 +45,8 @@ class RemoteControl:
         single_snapshot = response["snapshot"]
         
         # plot the snapshot on a simple graph
-        plt.plot(np.arrange(0, len(single_snapshot)), single_snapshot.real, label= "I")
-        plt.plot(np.arrange(0, len(single_snapshot)), single_snapshot.imag, label= "Q")
+        plt.plot(np.arange(0, len(single_snapshot)), single_snapshot.real, label= "I")
+        plt.plot(np.arange(0, len(single_snapshot)), single_snapshot.imag, label= "Q")
         
         plt.xlabel("Sample Number")
         plt.legend(loc= "best")
@@ -70,11 +70,11 @@ class RemoteControl:
         }
         
         # write the command to the cli for the remote program to read
-        self._stdin.write(f"{json.dump(command)} \n")
+        self._stdin.write(f"{json.dumps(command)} \n")
         self._stdin.flush()
         
         # read the json response
-        response = json.load(self._stdout.read())
+        response = json.loads(self._stdout.read())
         
          # catch any errors thrown
         if response["status"] != "ready":           
@@ -91,11 +91,11 @@ class RemoteControl:
             "command" : "kill"
         }
         
-        self._stdin.write(f"{json.dump(command)} \n")
+        self._stdin.write(f"{json.dumps(command)} \n")
         self._stdin.flush()
         
         # read the json response
-        response = json.load(self._stdout.read())
+        response = json.loads(self._stdout.read())
         
         # error catcher
         if response["status"] != "killed":
