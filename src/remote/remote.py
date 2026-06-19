@@ -6,6 +6,7 @@ import json
 import numpy as np
 import argparse
 
+import sys
 
 def arg_parser():
     """ Setup the arg parser to collect the config file on setup
@@ -147,7 +148,20 @@ def persistent_server(s):
             # any new commands can be added as
             # elif command = "..."
             #   ...
-        
+                
+            
+            # kill command from the main program 
+            elif command == "kill":
+                json_dump = {
+                    "status" : "killed"
+                }
+                
+                print(json.dump(json_dump))
+                
+                # kill the process
+                sys.exit()
+                
+                
         # catch any exceptions, package as a json and print to the cli for the ssh client to catch
         except Exception as error:
             json_dump = {
