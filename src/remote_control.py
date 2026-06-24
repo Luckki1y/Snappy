@@ -9,7 +9,14 @@ import json
 
 class RemoteControl:
     def __init__(self, client: paramiko.client.SSHClient, configfile: str) -> None:
-        self._stdin, self._stdout, self._stderr = client.exec_command("")           # TODO implement the python command
+        
+        # find the correct directory and activate the venv
+        command = f"cd Snappy/src/remote && source venv/bin/activate && python remote.py --c {str(configfile)}"
+        
+        try:
+            self._stdin, self._stdout, self._stderr = client.exec_command(command)
+        except paramiko.ssh_exception.SSHException:
+            raise RuntimeError("An error occurred running the python remote server")
         
         response = json.loads(self._stdout.readline())
         

@@ -78,7 +78,7 @@ def sanity_check(s):
     return json_dump
 
 def full_snapshot(s, n: int, samples: int, filename: str):
-    """ Creates a full snapshot of n x samples saved as filename. This function creates an empty array and using a loop takes a snapshot for each index assinging to the 
+    """ Creates a full snapshot of n x samples saved as filename. This function creates an empty array and using a loop takes a snapshot for each index assigning to the 
         empty array. After the entire array has been iterated through the data is saved as a 2d array.
 
     Args:
@@ -115,11 +115,11 @@ def full_snapshot(s, n: int, samples: int, filename: str):
     return json_dump
                 
 def persistent_server(s):
-    """ This is a persistent server that will be launched from the main program. Using this, commands can be passed back and forward to compelete any actions that
+    """ This is a persistent server that will be launched from the main program. Using this, commands can be passed back and forward to complete any actions that
         need to be completed specifically on the RFSoc
         
         Args:
-            s (object): This is the souk mkid readout object created from initalising the board
+            s (object): This is the souk mkid readout object created from initializing the board
     """
     
     while True:
