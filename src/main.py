@@ -43,7 +43,7 @@ def arg_parser():
         "--phase", "--p",
         type= float,
         default= 0.0,
-        help= "The phase of the wave generated e.g. "         # TODO add the phase e.g.
+        help= "The phase of the wave generated e.g. "         # TODO: add the phase e.g.
     )
     parser.add_argument(
         "--amplitude", "--a",
@@ -55,13 +55,13 @@ def arg_parser():
         "--n",
         type= int,
         default= 7500,
-        help= ""            # TODO add the help section
+        help= ""            # TODO: add the help section
     )
     parser.add_argument(
         "--samples", "--s",
         type= int,
         default= 4500,
-        help= ""            # TODO add the help section
+        help= ""            # TODO: add the help section
     )
     parser.arg_argument(
         "--single_snapshot_filename", "--ssfn",
@@ -86,7 +86,7 @@ def main(args, host, username, password):
     tools_client = sshclient.create_ssh(host, username, password)           # tools ssh
     
     # create the remote control instance, initializing the board
-    print("Initialsing the board")
+    print("Initializing the board")
     tools_control = RemoteControl(tools_client, f"{args.board_config_file}")
     
     # complete a sanity check
