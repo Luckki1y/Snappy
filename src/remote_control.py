@@ -11,7 +11,7 @@ class RemoteControl:
     def __init__(self, client: paramiko.client.SSHClient, configfile: str) -> None:
         
         # find the correct directory and activate the venv
-        command = f"cd Snappy/src/remote && source venv/bin/activate && python remote.py --c {str(configfile)}"
+        command = f"cd C:\Users\'Admin shared'\Desktop\'rfsoc 4x2'\Testdir && ..\venv\Scripts\Activate.ps1 && python remote.py --c {str(configfile)}"
         
         try:
             self._stdin, self._stdout, self._stderr = client.exec_command(command)
